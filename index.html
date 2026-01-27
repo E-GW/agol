@@ -4,50 +4,58 @@
   <title>Hello, Map!</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="" />
-  
-  <!-- calls for ArcGIS API's CSS file and JS library. -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
-  <script src="https://js.arcgis.com/4.25/"></script>
 
+  <!-- Calcite + ArcGIS Maps SDK + Map components -->
+  <script type="module" src="https://js.arcgis.com/calcite-components/3.3.3/calcite.esm.js"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.34/"></script>
+  <script type="module" src="https://js.arcgis.com/4.34/map-components/"></script>
 
-  <!-- Main JS logic AFTER ArcGIS library loads -->
+  <!-- Set your API key -->
   <script>
-    require([
-      "esri/config",
-      "esri/Map",
-      "esri/views/MapView"
-    ], function(esriConfig, Map, MapView) {
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
-
-
-      const map = new Map({
-        basemap: "streets"
-      });
-
-      const view = new MapView({
-        container: "viewDiv",
-        map: map,
-        center: [-87.61967, 41.8803464], // [longitude, latitude]
-        zoom: 13
-      });
+    require(["esri/config"], function (esriConfig) {
+      esriConfig.apiKey =
+        "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
     });
   </script>
 
-  <!-- makes map full screen. -->
-  <style>  
-    html,  
-    body,  
-    #viewDiv {  
-      padding: 0;  
-      margin: 0;  
-      height: 100%;  
-      width: 100%;  
-    }  
-  </style> 
-
+  <style>
+    html, body, arcgis-map {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    arcgis-map { display: block; }
+  </style>
 </head>
+
 <body>
-  <div id="viewDiv"></div> 
+  <arcgis-map
+    id="map"
+    basemap="terrain"
+    center="-87.61967, 41.8803464"
+    zoom="13"
+  >
+    <!-- Locate (HTML5 Geolocation) -->
+    <arcgis-locate slot="top-left" scale="5000"></arcgis-locate>
+
+    <!-- Search web component -->
+    <arcgis-search slot="top-right"></arcgis-search>
+
+    <!-- Basemap Gallery (moved to avoid overlapping Search) -->
+    <arcgis-basemap-gallery slot="bottom-right"></arcgis-basemap-gallery>
+  </arcgis-map>
+
+  <script type="module">
+    // Optional: tweak HTML5 geolocation behavior for Locate
+    await customElements.whenDefined("arcgis-locate");
+    const locateEl = document.querySelector("arcgis-locate");
+    locateEl.geolocationOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    };
+  </script>
 </body>
 </html>
