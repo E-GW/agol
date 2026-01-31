@@ -11,11 +11,51 @@
   <script src="https://js.arcgis.com/4.34/"></script>
   <script type="module" src="https://js.arcgis.com/4.34/map-components/"></script>
 
-  <!-- Set your API key -->
   <script>
-    require(["esri/config"], function (esriConfig) {
-      esriConfig.apiKey =
-        "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
+    require([  
+      "esri/config",  
+      "esri/Map",  
+      "esri/views/MapView",   
+      "esri/Graphic",  
+      "esri/layers/GraphicsLayer"   
+    ], function(esriConfig,Map, MapView, Graphic, GraphicsLayer) {
+
+      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
+      const map = new Map ({
+        basemap: "arcgis-topographic"
+      }); 
+      
+      const view = new MapView({
+        map: map,
+        center: [-87.61967, 41.8803464],
+        zoom: 13,
+        container: "viewDiv"
+        });
+
+        const graphicsLayer = new GraphicsLayer();  
+        map.add(graphicsLayer);
+
+        const point = { //Create a point  
+          type: "point",  
+          longitude: -87.6107666,    //long lat of Stevie Ray Vaughan Statue
+          latitude: 41.8914046
+        };
+
+        const simpleMarkerSymbol = {  
+          type: "simple-marker",  
+          color: [0, 0, 139],  // Color of blues rock
+          outline: {  
+            color: [255, 255, 255], // White  
+            width: 1
+          }  
+        };
+
+        const pointGraphic = new Graphic({  
+          geometry: point,  
+          symbol: simpleMarkerSymbol  
+        });
+        
+        graphicsLayer.add(pointGraphic);
     });
   </script>
 
