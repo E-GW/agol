@@ -1,63 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Hello, AGOL!</title>
+  <title>Hello, AGOL! (Map Components + Marker)</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- Calcite + ArcGIS Maps SDK + Map components -->
-  <script type="module" src="https://js.arcgis.com/calcite-components/3.3.3/calcite.esm.js"></script>
+  <!-- ArcGIS Maps SDK for JavaScript + Map Components -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
   <script src="https://js.arcgis.com/4.34/"></script>
   <script type="module" src="https://js.arcgis.com/4.34/map-components/"></script>
-
-  <script>
-    require([  
-      "esri/config",  
-      "esri/Map",  
-      "esri/views/MapView",   
-      "esri/Graphic",  
-      "esri/layers/GraphicsLayer"   
-    ], function(esriConfig,Map, MapView, Graphic, GraphicsLayer) {
-
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
-      const map = new Map ({
-        basemap: "arcgis-topographic"
-      }); 
-      
-      const view = new MapView({
-        map: map,
-        center: [-87.61967, 41.8803464],
-        zoom: 13,
-        container: "viewDiv"
-        });
-
-        const graphicsLayer = new GraphicsLayer();  
-        map.add(graphicsLayer);
-
-        const point = { //Create a point  
-          type: "point",  
-          longitude: -87.6107666,    //long lat of Stevie Ray Vaughan Statue
-          latitude: 41.8914046
-        };
-
-        const simpleMarkerSymbol = {  
-          type: "simple-marker",  
-          color: [0, 0, 139],  // Color of blues rock
-          outline: {  
-            color: [255, 255, 255], // White  
-            width: 1
-          }  
-        };
-
-        const pointGraphic = new Graphic({  
-          geometry: point,  
-          symbol: simpleMarkerSymbol  
-        });
-        
-        graphicsLayer.add(pointGraphic);
-    });
-  </script>
 
   <style>
     html, body, arcgis-map {
@@ -68,34 +19,106 @@
     }
     arcgis-map { display: block; }
   </style>
+
+  <script>
+    require(["esri/config", "esri/Graphic", "esri/layers/FeatureLayer" ], function (esriConfig, Graphic, FeatureLayer) {
+      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurBJmF1dHA4CHzUZ4f7XXY9MumVDFdZwWOV0pYRQMOAc7ZaqvOZxcqTmdHYg4uq0LAzk5EA8UDp0afz4N38c05_g1e4nZkAsxtdl9eWtAkFEOzYhK5sSy0SSdy9kSZ2kK797kJHpMrR-d0v7pjLT7kO2zAR9lbfIj2YY8PY1C_ARAz5SGHU8AQF_B146E-iEsWLrzafOtmDmUKhSkdT9BEWgLhqy6WzEsPYTj7B_66V6MAT1_eplYvQF3";
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        const mapEl = document.querySelector("#map");
+        await mapEl.viewOnReady();
+
+        // Marker
+        const attributes = {
+          Name: "Navy Pier",
+          Description: "A historic pier with shops, restaurants, theaters, parks, and exhibitions."
+        };
+
+        const popupTemplate = {
+          title: "{Name}",
+          content: "{Description}"
+        };
+
+        const pointGraphic = new Graphic({
+          geometry: {
+            type: "point",
+            longitude: -87.6107666,
+            latitude: 41.8914046
+          },
+          symbol: {
+            type: "simple-marker",
+            style: "x",
+            color: [0, 0, 139],
+            size: 12,
+            outline: {
+              color: [0, 255, 0],
+              width: 3
+            }
+          },
+          attributes,
+          popupTemplate
+        });
+
+        // Polyline
+        const polylineGraphic = new Graphic({
+          geometry: {
+            type: "polyline",
+            paths: [
+              [-87.6360524, 41.8788804],
+              [-87.6230326, 41.898774]
+            ]
+          },
+          symbol: {
+            type: "simple-line",
+            color: [255, 0, 0],
+            width: 3
+          }
+        });
+
+        // Polygon
+        const polygonGraphic = new Graphic({
+          geometry: {
+            type: "polygon",
+            rings: [
+              [-87.6250, 41.8950],
+              [-87.6165, 41.8935],
+              [-87.6180, 41.8925],
+              [-87.6250, 41.8950] // Close loop
+            ]
+          },
+          symbol: {
+            type: "simple-fill",
+            color: [0, 0, 255, 0.2], // transparent blue fill
+            outline: {
+              color: [0, 0, 255],
+              width: 2
+            }
+          }
+        });
+
+        // Add all graphics
+        mapEl.graphics.addMany([pointGraphic, polylineGraphic, polygonGraphic]);
+
+        // Zoom to include polygon
+        mapEl.goTo({ target: polygonGraphic.geometry, zoom: 15 }).catch(() => {});
+
+        const usaeduLayer = new FeatureLayer({
+          url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Structures_Law_Enforcement_v1/FeatureServer"
+        });
+        mapEl.map.add(usaeduLayer);
+      })
+    });
+  </script>
 </head>
 
 <body>
   <arcgis-map
     id="map"
-    basemap="terrain"
+    basemap="arcgis/topographic"
     center="-87.61967, 41.8803464"
     zoom="13"
   >
-    <!-- Locate (HTML5 Geolocation) -->
-    <arcgis-locate slot="top-left" scale="5000"></arcgis-locate>
-
-    <!-- Search web component -->
-    <arcgis-search slot="top-right"></arcgis-search>
-
-    <!-- Basemap Gallery (moved to avoid overlapping Search) -->
-    <arcgis-basemap-gallery slot="bottom-right"></arcgis-basemap-gallery>
+    <!-- No widgets / controls added -->
   </arcgis-map>
-
-  <script type="module">
-    // Optional: tweak HTML5 geolocation behavior for Locate
-    await customElements.whenDefined("arcgis-locate");
-    const locateEl = document.querySelector("arcgis-locate");
-    locateEl.geolocationOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    };
-  </script>
 </body>
 </html>
