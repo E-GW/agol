@@ -100,12 +100,25 @@
         mapEl.graphics.addMany([pointGraphic, polylineGraphic, polygonGraphic]);
 
         // Zoom to include polygon
-        mapEl.goTo({ target: polygonGraphic.geometry, zoom: 15 }).catch(() => {});
+        mapEl.goTo({ target: polygonGraphic.geometry, zoom: 15 }).catch(() => {}); 
 
-        const usaeduLayer = new FeatureLayer({
-          url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Structures_Law_Enforcement_v1/FeatureServer"
+        // Define a pop-up for usaeduLayer
+        const popupHospitals = {
+          "title": "Hospital",
+          "content": "<b>Official Name:</b> {NAME}<br><b>Street Address:</b> {ADDRESS}<br><b>ZIP Code:</b> {ZIPCODE}<br>"
+        }
+
+        //adding the Const for the feature layer
+        const usahospLayer = new FeatureLayer({
+        url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Structures_Medical_Emergency_Response_v1/FeatureServer",
+
+        //adding the popup here
+        outFields: ["NAME","ADDRESS","ZIPCODE"],
+        popupTemplate: popupHospitals
         });
-        mapEl.map.add(usaeduLayer);
+
+        //adding the feature layer to the map
+        mapEl.map.add(usahospLayer);
       })
     });
   </script>
