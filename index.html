@@ -117,8 +117,33 @@
         popupTemplate: popupHospitals
         });
 
+        const airportRenderer = {
+                "type": "simple",
+                "symbol": {
+                  "type": "picture-marker",
+                  "url": "https://e-gw.github.io/agol/airplane_880406.png",
+                  "width": "18px",
+                  "height": "18px"
+                }
+              }
+
+        // Define popup for airports
+        const popupAirports = {
+          title: "Airport: {NAME}",
+          content: "<b>Facility Name:</b> {Fac_Name}<br><b>Facility Type:</b> {Fac_Type}<br>"
+        };
+
+        // Create the feature layer for National Airports
+        const airportsLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/National_Airports/FeatureServer",
+          outFields: ["*"],
+          renderer: airportRenderer,
+          popupTemplate: popupAirports
+        });
+
         //adding the feature layer to the map
         mapEl.map.add(usahospLayer);
+        mapEl.map.add(airportsLayer);
       })
     });
   </script>
