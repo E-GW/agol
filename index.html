@@ -111,7 +111,7 @@
         //adding the Const for the feature layer
         const usahospLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Structures_Medical_Emergency_Response_v1/FeatureServer",
-
+//Airports
         //adding the popup here
         outFields: ["NAME","ADDRESS","ZIPCODE"],
         popupTemplate: popupHospitals
@@ -162,10 +162,57 @@
           labelingInfo: [airportLabels], //adding the labels
           popupTemplate: popupAirports
         });
+//Heliports
+        const heliportRenderer = {
+                "type": "simple",
+                "symbol": {
+                  "type": "picture-marker",
+                  "url": "https://e-gw.github.io/agol/helicopter_1225041.png",
+                  "width": "18px",
+                  "height": "18px"
+                }
+              }
+
+        // Define popup for airports
+        const popupHeliports = {
+          title: "Heliport: {NAME}",
+          content: "<b>Facility Name:</b> {Fac_Name}<br><b>Facility Type:</b> {Fac_Type}<br>"
+        };
+
+        //const to make the airport labels
+        const heliportLabels = {
+          symbol: {
+            type: "text",
+            color: "#FFFFFF",
+            haloColor: "#5E8D74",
+            haloSize: "2px",
+            font: {
+              size: "12px",
+              family: "Noto Sans",
+              style: "italic",
+              weight: "normal"
+            }
+          },
+          labelPlacement: "above-center",
+          labelExpressionInfo: {
+            expression: "$feature.Fac_Name"
+          }
+        };
+
+        // Create the feature layer for National Airports
+        const heliportsLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/National_Airports/FeatureServer",
+          outFields: ["*"],
+          renderer: heliportRenderer,
+          definitionExpression: "Fac_Type = 'HELIPORT'", //adding sql to filter for airports
+          labelingInfo: [heliportLabels], //adding the labels
+          popupTemplate: popupHeliports
+        });
 
         //adding the feature layer to the map
         mapEl.map.add(usahospLayer);
         mapEl.map.add(airportsLayer);
+        mapEl.map.add(heliportsLayer);
       })
     });
   </script>
